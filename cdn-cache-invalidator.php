@@ -43,37 +43,14 @@ function cdn_cache_invalidator_menu() {
  * @return the $queue with new URLs added as appropriate.
  */
 function cdn_cache_invalidator_enqueue($queue, $post) {
-  global $wp_rewrite;
+  $full_link = get_permalink($post);
+  $relative_link = parse_url($full_link, PHP_URL_PATH);
+  $query = parse_url($full_link, PHP_URL_QUERY);
+  if ($query) $relative_link += $query;
 
-  if ( is_wp_error( $post ) )
-    return $post;
-
-  $post_link = $wp_rewrite->get_extra_permastruct($post->post_type);
-  $post_root_link = untrailingslashit(preg_replace('/(%[^%]+%)/i', '', $post_link));
-
-  // Add the post category URL to the queue
-  $queue[] = $post_root_link;
-
-  $slug = $post->post_name;
-
-  $draft_or_pending = isset($post->post_status) && in_array( $post->post_status, array( 'draft', 'pending', 'auto-draft' ) );
-  $post_type = get_post_type_object($post->post_type);
-
-  if ( $post_type->hierarchical ) {
-    $slug = get_page_uri( $post->ID );
-  }
-
-  if ( !empty($post_link) && !$draft_or_pending ) {
-    $post_link = str_replace("%$post->post_type%", $slug, $post_link);
-  } else {
-    if ($post_type->query_var && (isset($post->post_status) && !$draft_or_pending))
-      $post_link = add_query_arg($post_type->query_var, $slug, '');
-    else
-      $post_link = add_query_arg(array('post_type' => $post->post_type, 'p' => $post->ID), '');
-  }
-
-  // Add the post URL to the queue
-  $queue[] = $post_link;
+  $queue[] = $relative_link;
+  if ($relative_link != '/')
+    $queue[] = untrailingslashit($relative_link);
 
   if ( $post->post_parent != 0 ) {
     // Recurse to the post's parents
