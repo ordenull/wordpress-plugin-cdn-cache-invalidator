@@ -182,6 +182,7 @@ function cdn_cache_invalidator_clear() {
 
   // Add all posts that have been modified since the last flush
   $update_queue = array();
+  $update_queue = apply_filters("cdn_cache_invalidator_add_urls", $update_queue);
   $post_types = get_post_types();
   foreach ($post_types as $post_type_name) {
     $posts = get_posts( array(
