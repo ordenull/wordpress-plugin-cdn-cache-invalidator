@@ -78,7 +78,7 @@ function cdn_cache_invalidator_enqueue($queue, $post) {
   if ( $post->post_parent != 0 ) {
     // Recurse to the post's parents
     $parent = get_post($post->post_parent);
-    $queue[] = add_to_queue($queue, $parent);
+    $queue[] = cdn_cache_invalidator_enqueue($queue, $parent);
   }
 
   // This filter allows custom code to add URLs to the queue. For example this could
