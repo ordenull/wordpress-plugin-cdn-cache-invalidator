@@ -161,6 +161,7 @@ function cdn_cache_invalidator_clear() {
   $update_queue = array();
   $update_queue = apply_filters("cdn_cache_invalidator_add_urls", $update_queue);
   $post_types = get_post_types();
+  $post_types = apply_filters("cdn_cache_invalidator_post_types", $post_types);
   foreach ($post_types as $post_type_name) {
     $posts = get_posts( array(
       'post_type' => $post_type_name,
@@ -168,14 +169,16 @@ function cdn_cache_invalidator_clear() {
     foreach ($posts as $post) {
       $modified_date = strtotime($post->post_modified);
       if ($modified_date > $last_flush) {
-        // Enqueue all of the post URLs and call any user filters
+        // Enqueue all of the post URLs and call more expansion filters
         $update_queue = cdn_cache_invalidator_enqueue($update_queue, $post);
       }
     }
   }
 
+  $update_queue = apply_filters("cdn_cache_invalidator_remove_urls", $update_queue);
+
   // Sort and remove duplicate URLs from this list
-  $update_queue = array_unique ($update_queue, SORT_STRING);
+  $update_queue = array_unique($update_queue, SORT_STRING);
 
   if ($_SERVER['REQUEST_METHOD'] == 'POST' && $_POST['clear-btn']) {
     // The Clear Cache button has been clicked
