@@ -147,9 +147,9 @@ function cdn_cache_invalidator_clear() {
   }
 
   $access_key = get_option('cdn_cache_invalidator_access_key');
-  if (!$access_key) wp_die(__('This plugin is not configured yet'));
+  //if (!$access_key) wp_die(__('This plugin is not configured yet'));
   $access_secret = get_option('cdn_cache_invalidator_access_secret');
-  if (!$access_secret) wp_die(__('This plugin is not configured yet'));
+  //if (!$access_secret) wp_die(__('This plugin is not configured yet'));
   $distribution = get_option('cdn_cache_invalidator_distribution');
   if (!$distribution) wp_die(__('This plugin is not configured yet'));
   $domain = get_option('cdn_cache_invalidator_domain');
